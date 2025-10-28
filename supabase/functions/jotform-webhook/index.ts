@@ -56,8 +56,19 @@ serve(async (req: Request) => {
       body = Object.fromEntries(new URLSearchParams(text));
     }
 
-  const formId = body.formID || body.form_id || body.formId || null;
-    const submissionId = body.id || body.submission_id || body.sid || null;
+    // Parse the rawRequest field if it exists (JotForm sends actual form data here as JSON string)
+    let parsedData = body;
+    if (body.rawRequest) {
+      try {
+        parsedData = JSON.parse(body.rawRequest);
+      } catch (e) {
+        console.log('Could not parse rawRequest, using body as-is');
+      }
+    }
+
+    const formId = body.formID || body.form_id || body.formId || null;
+    const submissionId = body.submissionID || body.id || body.submission_id || body.sid || null;
+    const formTitle = body.formTitle || null;
 
     // Temporary masked logging to verify SERVICE_KEY is present in runtime (remove after debug)
     try {
@@ -71,7 +82,7 @@ serve(async (req: Request) => {
       form_id: formId,
       submission_id: submissionId,
       data: body,
-      parsed: null,
+      parsed: parsedData,
       files: null,
       submitted_at: body.created_at || new Date().toISOString()
     };

@@ -45,8 +45,9 @@
       const meta = document.createElement('div');
       meta.innerHTML = `<strong>form_id:</strong> ${escapeHtml(r.form_id || '')} <strong>submitted_at:</strong> ${escapeHtml(r.submitted_at || '')}`;
       
-      // Parse JotForm data to show clean fields
-      const cleanData = parseJotFormData(r.data);
+      // Parse JotForm data - use parsed field if available, otherwise use raw data
+      const dataToDisplay = r.parsed || r.data;
+      const cleanData = parseJotFormData(dataToDisplay);
       
       const dataDiv = document.createElement('div');
       dataDiv.style.marginTop = '8px';
@@ -81,7 +82,7 @@
       summaryEl.style.cursor = 'pointer';
       summaryEl.style.color = '#666';
       const pre = document.createElement('pre');
-      pre.textContent = JSON.stringify(r.data, null, 2);
+      pre.textContent = JSON.stringify(r, null, 2);
       detailsEl.appendChild(summaryEl);
       detailsEl.appendChild(pre);
       
@@ -96,10 +97,19 @@
     const clean = {};
     
     // JotForm typically sends data like: { "q3_firstName": "John", "q4_lastName": "Doe" }
+    // or { "q10_name": {"first": "John", "last": "Doe"} }
     // We want to extract readable field names
     for (const [key, value] of Object.entries(data)) {
-      // Skip system fields
-      if (['formID', 'submissionID', 'id', 'event', 'rawRequest'].includes(key)) {
+      // Skip system/technical fields
+      if ([
+        'formID', 'submissionID', 'id', 'event', 'rawRequest', 'slug',
+        'jsExecutionTracker', 'submitSource', 'submitDate', 'buildDate',
+        'uploadServerUrl', 'eventObserver', 'event_id', 'timeToSubmit',
+        'validatedNewRequiredFieldIDs', 'path', 'webhookURL', 'username',
+        'type', 'customParams', 'product', 'formTitle', 'customTitle',
+        'documentID', 'teamID', 'subject', 'isSilent', 'customBody',
+        'fromTable', 'appID', 'unread', 'parent', 'ip', 'pretty'
+      ].includes(key)) {
         continue;
       }
       
@@ -109,19 +119,30 @@
       // Remove question number prefix (q1_, q2_, etc.)
       cleanKey = cleanKey.replace(/^q\d+_/, '');
       
+      // Remove trailing numbers (like email11, phoneNumber12)
+      cleanKey = cleanKey.replace(/\d+$/, '');
+      
       // Convert camelCase to Title Case
       cleanKey = cleanKey.replace(/([A-Z])/g, ' $1').trim();
       cleanKey = cleanKey.charAt(0).toUpperCase() + cleanKey.slice(1);
       
-      // Handle nested objects (like name fields)
+      // Handle nested objects (like name fields with first/last)
       if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-        for (const [subKey, subValue] of Object.entries(value)) {
-          const subCleanKey = subKey.charAt(0).toUpperCase() + subKey.slice(1);
-          clean[`${cleanKey} - ${subCleanKey}`] = String(subValue);
+        // Check if it's a phone number object
+        if (value.area && value.phone) {
+          clean[cleanKey] = `(${value.area}) ${value.phone}`;
+        } else {
+          // Handle other nested objects
+          for (const [subKey, subValue] of Object.entries(value)) {
+            if (subValue && String(subValue).trim()) {
+              const subCleanKey = subKey.charAt(0).toUpperCase() + subKey.slice(1);
+              clean[`${cleanKey} - ${subCleanKey}`] = String(subValue);
+            }
+          }
         }
       } else if (Array.isArray(value)) {
         clean[cleanKey] = value.join(', ');
-      } else {
+      } else if (value && String(value).trim()) {
         clean[cleanKey] = String(value);
       }
     }

@@ -44,12 +44,89 @@
       row.className = 'row';
       const meta = document.createElement('div');
       meta.innerHTML = `<strong>form_id:</strong> ${escapeHtml(r.form_id || '')} <strong>submitted_at:</strong> ${escapeHtml(r.submitted_at || '')}`;
+      
+      // Parse JotForm data to show clean fields
+      const cleanData = parseJotFormData(r.data);
+      
+      const dataDiv = document.createElement('div');
+      dataDiv.style.marginTop = '8px';
+      
+      if (Object.keys(cleanData).length > 0) {
+        const table = document.createElement('table');
+        table.style.width = '100%';
+        table.style.borderCollapse = 'collapse';
+        for (const [key, value] of Object.entries(cleanData)) {
+          const tr = document.createElement('tr');
+          const tdKey = document.createElement('td');
+          tdKey.style.padding = '4px 8px';
+          tdKey.style.fontWeight = 'bold';
+          tdKey.style.verticalAlign = 'top';
+          tdKey.style.width = '200px';
+          tdKey.textContent = key;
+          const tdVal = document.createElement('td');
+          tdVal.style.padding = '4px 8px';
+          tdVal.textContent = value;
+          tr.appendChild(tdKey);
+          tr.appendChild(tdVal);
+          table.appendChild(tr);
+        }
+        dataDiv.appendChild(table);
+      }
+      
+      // Show raw data in collapsible section
+      const detailsEl = document.createElement('details');
+      detailsEl.style.marginTop = '8px';
+      const summaryEl = document.createElement('summary');
+      summaryEl.textContent = 'Show raw data';
+      summaryEl.style.cursor = 'pointer';
+      summaryEl.style.color = '#666';
       const pre = document.createElement('pre');
       pre.textContent = JSON.stringify(r.data, null, 2);
+      detailsEl.appendChild(summaryEl);
+      detailsEl.appendChild(pre);
+      
       row.appendChild(meta);
-      row.appendChild(pre);
+      row.appendChild(dataDiv);
+      row.appendChild(detailsEl);
       listEl.appendChild(row);
     });
+  }
+
+  function parseJotFormData(data) {
+    const clean = {};
+    
+    // JotForm typically sends data like: { "q3_firstName": "John", "q4_lastName": "Doe" }
+    // We want to extract readable field names
+    for (const [key, value] of Object.entries(data)) {
+      // Skip system fields
+      if (['formID', 'submissionID', 'id', 'event', 'rawRequest'].includes(key)) {
+        continue;
+      }
+      
+      // Extract field name from keys like "q3_firstName" -> "First Name"
+      let cleanKey = key;
+      
+      // Remove question number prefix (q1_, q2_, etc.)
+      cleanKey = cleanKey.replace(/^q\d+_/, '');
+      
+      // Convert camelCase to Title Case
+      cleanKey = cleanKey.replace(/([A-Z])/g, ' $1').trim();
+      cleanKey = cleanKey.charAt(0).toUpperCase() + cleanKey.slice(1);
+      
+      // Handle nested objects (like name fields)
+      if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        for (const [subKey, subValue] of Object.entries(value)) {
+          const subCleanKey = subKey.charAt(0).toUpperCase() + subKey.slice(1);
+          clean[`${cleanKey} - ${subCleanKey}`] = String(subValue);
+        }
+      } else if (Array.isArray(value)) {
+        clean[cleanKey] = value.join(', ');
+      } else {
+        clean[cleanKey] = String(value);
+      }
+    }
+    
+    return clean;
   }
 
   function escapeHtml(s) {

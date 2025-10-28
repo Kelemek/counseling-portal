@@ -49,9 +49,18 @@ serve(async (req: Request) => {
 
     let body: any;
     const ct = (req.headers.get("content-type") || "").toLowerCase();
+    
     if (ct.includes("application/json")) {
       body = await req.json();
+    } else if (ct.includes("multipart/form-data")) {
+      // Parse multipart/form-data
+      const formData = await req.formData();
+      body = {};
+      for (const [key, value] of formData.entries()) {
+        body[key] = value;
+      }
     } else {
+      // URL-encoded fallback
       const text = await req.text();
       body = Object.fromEntries(new URLSearchParams(text));
     }

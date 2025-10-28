@@ -1,0 +1,19 @@
+# Node / Netlify
+node_modules/
+/.netlify/
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Deno cache (if you run Deno locally)
+.deno/
+
+# Supabase temp files
+supabase/.temp/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

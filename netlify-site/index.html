@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JotForm Submissions Viewer</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; }
+    #controls { margin-bottom: 12px; }
+    .row { border-bottom: 1px solid #eee; padding: 8px 0; }
+    pre { background: #f7f7f7; padding: 8px; overflow:auto }
+  </style>
+</head>
+<body>
+  <h1>JotForm Submissions</h1>
+  <div id="controls">
+    <button id="refresh">Refresh</button>
+    <input id="formFilter" placeholder="Filter by form_id" />
+  </div>
+
+  <div id="list"></div>
+
+  <!-- config.js will be generated during Netlify build and placed into public/ -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -40,14 +40,21 @@ export default async function FormDetailPage({
   // Parse the form fields
   let parsedFields: Record<string, any> = {};
   try {
-    // Try parsed_fields first, fall back to raw_request
-    if (submission.parsed_fields) {
-      parsedFields = JSON.parse(submission.parsed_fields);
-    } else if (submission.raw_request) {
-      // Extract fields from raw_request
-      const rawData = typeof submission.raw_request === 'string' 
-        ? JSON.parse(submission.raw_request) 
-        : submission.raw_request;
+    console.log('Submission data:', {
+      id: submission.id,
+      has_parsed: !!submission.parsed,
+      has_data: !!submission.data,
+      data_type: typeof submission.data,
+      data_preview: submission.data ? JSON.stringify(submission.data).substring(0, 200) : 'null'
+    });
+    
+    // Use the correct field names from schema: 'parsed' and 'data'
+    if (submission.parsed && typeof submission.parsed === 'object') {
+      parsedFields = submission.parsed;
+    } else if (submission.data && typeof submission.data === 'object') {
+      const rawData = submission.data;
+      
+      console.log('Raw data keys:', Object.keys(rawData));
       
       // JotForm sends data with question IDs as keys (q1, q2, etc.)
       // We'll extract those into a cleaner format
@@ -57,6 +64,8 @@ export default async function FormDetailPage({
           acc[key] = value;
           return acc;
         }, {} as Record<string, any>);
+        
+      console.log('Parsed fields count:', Object.keys(parsedFields).length);
     }
   } catch (e) {
     console.error('Error parsing fields:', e);
@@ -198,7 +207,7 @@ export default async function FormDetailPage({
             </summary>
             <div className="px-6 pb-4 bg-white">
               <pre className="text-xs text-gray-900 bg-gray-50 p-4 rounded overflow-x-auto">
-                {JSON.stringify(submission.raw_request, null, 2)}
+                {JSON.stringify(submission.data, null, 2)}
               </pre>
             </div>
           </details>

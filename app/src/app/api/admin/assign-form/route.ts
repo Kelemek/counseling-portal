@@ -14,9 +14,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { form_id, counselor_id, notes, due_date } = body;
+    const { intake_form_id, counselor_id, notes } = body;
 
-    if (!form_id || !counselor_id) {
+    if (!intake_form_id || !counselor_id) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const { data: form, error: formError } = await supabase
       .from('jotform_submissions')
       .select('id')
-      .eq('id', form_id)
+      .eq('id', intake_form_id)
       .single();
 
     if (formError || !form) {
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     const { data: existing } = await supabase
       .from('form_assignments')
       .select('id')
-      .eq('form_id', form_id)
+      .eq('intake_form_id', intake_form_id)
       .single();
 
     if (existing) {
@@ -72,12 +72,11 @@ export async function POST(request: NextRequest) {
     const { data: assignment, error: assignmentError } = await supabase
       .from('form_assignments')
       .insert({
-        form_id,
+        intake_form_id,
         counselor_id,
         assigned_by: user.id,
         status: 'pending',
         notes: notes || null,
-        due_date: due_date || null,
         assigned_at: new Date().toISOString(),
       })
       .select()

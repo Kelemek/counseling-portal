@@ -33,7 +33,7 @@ export default async function FormDetailPage({
   const { data: assignment } = await supabase
     .from('form_assignments')
     .select('*, users!form_assignments_counselor_id_fkey(email, counselor_profiles(*))')
-    .eq('form_id', params.id)
+    .eq('intake_form_id', params.id)
     .single();
 
   // Parse the form fields

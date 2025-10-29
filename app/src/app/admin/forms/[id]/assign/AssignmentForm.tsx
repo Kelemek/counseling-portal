@@ -35,10 +35,9 @@ export default function AssignmentForm({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          form_id: formId,
+          intake_form_id: formId,
           counselor_id: formData.counselor_id,
           notes: formData.notes || null,
-          due_date: formData.due_date || null,
         }),
       });
 

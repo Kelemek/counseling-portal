@@ -33,7 +33,7 @@ export default async function AssignFormPage({
   const { data: existingAssignment } = await supabase
     .from('form_assignments')
     .select('id')
-    .eq('form_id', params.id)
+    .eq('intake_form_id', params.id)
     .single();
 
   if (existingAssignment) {

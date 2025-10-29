@@ -34,11 +34,11 @@ export default async function AdminFormsPage() {
   // Get existing assignments
   const { data: assignments } = await supabase
     .from('form_assignments')
-    .select('form_id, counselor_id, status');
+    .select('intake_form_id, counselor_id, status');
 
-  // Create a map of form_id to assignment
+  // Create a map of intake_form_id to assignment
   const assignmentMap = new Map(
-    assignments?.map(a => [a.form_id, a]) || []
+    assignments?.map(a => [a.intake_form_id, a]) || []
   );
 
   return (

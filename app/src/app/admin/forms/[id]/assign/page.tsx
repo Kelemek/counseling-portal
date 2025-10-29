@@ -42,10 +42,14 @@ export default async function AssignFormPage({
   }
 
   // Get all users with counselor profiles (includes admins who are also counselors)
-  const { data: counselors } = await supabase
+  const { data: counselors, error: counselorsError } = await supabase
     .from('users')
     .select('id, email, role, counselor_profiles!inner(*)')
     .order('email');
+
+  if (counselorsError) {
+    console.error('Error fetching counselors:', counselorsError);
+  }
 
   // Parse form fields for display
   let parsedFields: Record<string, any> = {};

@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 export default async function FormDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const user = await authServer.getCurrentUser();
   
@@ -16,13 +16,14 @@ export default async function FormDetailPage({
     redirect('/unauthorized');
   }
 
+  const { id } = await params;
   const supabase = await createClient();
 
   // Get the submission
   const { data: submission, error } = await supabase
     .from('jotform_submissions')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !submission) {
@@ -33,7 +34,7 @@ export default async function FormDetailPage({
   const { data: assignment } = await supabase
     .from('form_assignments')
     .select('*, users!form_assignments_counselor_id_fkey(email, counselor_profiles(*))')
-    .eq('intake_form_id', params.id)
+    .eq('intake_form_id', id)
     .single();
 
   // Parse the form fields
@@ -68,7 +69,7 @@ export default async function FormDetailPage({
             </div>
             {!assignment && (
               <Link
-                href={`/admin/forms/${params.id}/assign`}
+                href={`/admin/forms/${id}/assign`}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
               >
                 <UserPlus className="w-4 h-4 mr-2" />

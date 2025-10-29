@@ -8,7 +8,7 @@ import AssignmentForm from './AssignmentForm';
 export default async function AssignFormPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const user = await authServer.getCurrentUser();
   
@@ -16,13 +16,14 @@ export default async function AssignFormPage({
     redirect('/unauthorized');
   }
 
+  const { id } = await params;
   const supabase = await createClient();
 
   // Get the submission
   const { data: submission, error } = await supabase
     .from('jotform_submissions')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !submission) {
@@ -33,11 +34,11 @@ export default async function AssignFormPage({
   const { data: existingAssignment } = await supabase
     .from('form_assignments')
     .select('id')
-    .eq('intake_form_id', params.id)
+    .eq('intake_form_id', id)
     .single();
 
   if (existingAssignment) {
-    redirect(`/admin/forms/${params.id}`);
+    redirect(`/admin/forms/${id}`);
   }
 
   // Get all counselors
@@ -62,7 +63,7 @@ export default async function AssignFormPage({
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <Link
-              href={`/admin/forms/${params.id}`}
+              href={`/admin/forms/${id}`}
               className="text-gray-600 hover:text-gray-900"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -125,7 +126,7 @@ export default async function AssignFormPage({
               </div>
             ) : (
               <AssignmentForm
-                formId={params.id}
+                formId={id}
                 counselors={counselors}
               />
             )}

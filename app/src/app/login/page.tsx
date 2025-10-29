@@ -18,22 +18,12 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      await authClient.signIn({ email, password })
-      const user = await authClient.getCurrentUser()
+      const { user } = await authClient.signIn({ email, password })
       
-      // Redirect based on role - check first role
-      if (user?.roles.includes('admin')) {
-        router.push('/admin')
-      } else if (user?.roles.includes('counselor')) {
-        router.push('/counselor')
-      } else if (user?.roles.includes('counselee')) {
-        router.push('/counselee')
-      } else {
-        router.push('/')
-      }
+      // Force a full page refresh to establish the session
+      window.location.href = '/admin'
     } catch (err: any) {
       setError(err.message || 'Failed to sign in')
-    } finally {
       setLoading(false)
     }
   }

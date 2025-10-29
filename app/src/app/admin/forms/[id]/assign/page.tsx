@@ -48,6 +48,12 @@ export default async function AssignFormPage({
     .select('id, email, role, counselor_profiles!inner(*)')
     .order('email');
 
+  console.log('Counselors query result:', { 
+    counselors, 
+    count: counselors?.length, 
+    error: counselorsError 
+  });
+
   if (counselorsError) {
     console.error('Error fetching counselors:', counselorsError);
   }

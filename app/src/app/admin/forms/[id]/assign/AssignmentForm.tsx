@@ -81,13 +81,19 @@ export default function AssignmentForm({
           className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-900 bg-white border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
         >
           <option value="" className="text-gray-500">Choose a counselor...</option>
-          {counselors.map((counselor) => (
-            <option key={counselor.id} value={counselor.id} className="text-gray-900">
-              {counselor.email}
-              {counselor.counselor_profiles?.specialization &&
-                ` - ${counselor.counselor_profiles.specialization}`}
-            </option>
-          ))}
+          {counselors.map((counselor) => {
+            const profile = Array.isArray(counselor.counselor_profiles)
+              ? counselor.counselor_profiles[0]
+              : counselor.counselor_profiles;
+            
+            return (
+              <option key={counselor.id} value={counselor.id} className="text-gray-900">
+                {counselor.email}
+                {profile?.specialties && profile.specialties.length > 0 &&
+                  ` - ${profile.specialties.join(', ')}`}
+              </option>
+            );
+          })}
         </select>
       </div>
 

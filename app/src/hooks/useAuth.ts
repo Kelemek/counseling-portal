@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { authClient, type AuthUser } from '@/lib/auth/server'
+import { authClient, type AuthUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/client'
 
 export function useAuth() {
@@ -55,8 +55,8 @@ export function useAuth() {
     signIn,
     signOut,
     isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin',
-    isCounselor: user?.role === 'counselor' || user?.role === 'admin',
-    isCounselee: user?.role === 'counselee',
+    isAdmin: user?.roles.includes('admin') ?? false,
+    isCounselor: (user?.roles.includes('counselor') || user?.roles.includes('admin')) ?? false,
+    isCounselee: user?.roles.includes('counselee') ?? false,
   }
 }

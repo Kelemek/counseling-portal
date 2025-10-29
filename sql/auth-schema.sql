@@ -189,6 +189,11 @@ CREATE POLICY "Admins can insert/update users"
     )
   );
 
+-- Allow new users to be created (for the trigger)
+CREATE POLICY "Allow user creation via auth trigger"
+  ON public.users FOR INSERT
+  WITH CHECK (auth.uid() = id);
+
 -- Counselor profiles policies
 CREATE POLICY "Counselors can view their own profile"
   ON public.counselor_profiles FOR SELECT

@@ -1,4 +1,4 @@
-import { authServer } from '@/lib/auth'
+import { authServer } from '@/lib/auth/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 

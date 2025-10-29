@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { authClient, type AuthUser } from '@/lib/auth'
+import { authClient, type AuthUser } from '@/lib/auth/server'
 import { createClient } from '@/lib/supabase/client'
 
 export function useAuth() {

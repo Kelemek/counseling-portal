@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { authServer } from '@/lib/auth';
+import { authServer } from '@/lib/auth/server';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import CreateCounselorForm from './CreateCounselorForm';

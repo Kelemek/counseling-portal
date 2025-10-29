@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { authServer } from '@/lib/auth';
+import { authServer } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { FileText, UserPlus, ArrowLeft } from 'lucide-react';

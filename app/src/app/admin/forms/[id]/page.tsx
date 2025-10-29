@@ -91,15 +91,15 @@ export default async function FormDetailPage({
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center text-sm">
                 <Calendar className="w-5 h-5 text-gray-400 mr-2" />
-                <span className="text-gray-600">Submitted:</span>
-                <span className="ml-2 font-medium">
+                <span className="text-gray-700">Submitted:</span>
+                <span className="ml-2 font-medium text-gray-900">
                   {format(new Date(submission.created_at), 'PPpp')}
                 </span>
               </div>
               <div className="flex items-center text-sm">
                 <FileText className="w-5 h-5 text-gray-400 mr-2" />
-                <span className="text-gray-600">Form ID:</span>
-                <span className="ml-2 font-medium">{submission.form_id}</span>
+                <span className="text-gray-700">Form ID:</span>
+                <span className="ml-2 font-medium text-gray-900">{submission.form_id}</span>
               </div>
             </div>
           </div>
@@ -112,13 +112,13 @@ export default async function FormDetailPage({
               </h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Assigned to:</span>
-                  <span className="text-sm font-medium">
+                  <span className="text-sm text-gray-700">Assigned to:</span>
+                  <span className="text-sm font-medium text-gray-900">
                     {assignment.users?.email}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Status:</span>
+                  <span className="text-sm text-gray-700">Status:</span>
                   <span
                     className={`px-2 py-1 text-xs font-semibold rounded-full ${
                       assignment.status === 'completed'
@@ -133,15 +133,15 @@ export default async function FormDetailPage({
                 </div>
                 {assignment.assigned_at && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Assigned on:</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm text-gray-700">Assigned on:</span>
+                    <span className="text-sm font-medium text-gray-900">
                       {format(new Date(assignment.assigned_at), 'PPp')}
                     </span>
                   </div>
                 )}
                 {assignment.notes && (
-                  <div className="mt-4 pt-4 border-t">
-                    <p className="text-sm text-gray-600 mb-1">Notes:</p>
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <p className="text-sm text-gray-700 mb-1">Notes:</p>
                     <p className="text-sm text-gray-900">{assignment.notes}</p>
                   </div>
                 )}
@@ -159,11 +159,11 @@ export default async function FormDetailPage({
                 <p className="text-sm text-gray-500">No form data available</p>
               ) : (
                 Object.entries(parsedFields).map(([key, value]) => (
-                  <div key={key} className="border-b pb-3 last:border-b-0">
-                    <dt className="text-sm font-medium text-gray-600 mb-1">
+                  <div key={key} className="border-b border-gray-200 pb-3 last:border-b-0">
+                    <dt className="text-sm font-semibold text-gray-700 mb-1">
                       {key}
                     </dt>
-                    <dd className="text-sm text-gray-900">
+                    <dd className="text-sm text-gray-900 bg-white">
                       {typeof value === 'object'
                         ? JSON.stringify(value, null, 2)
                         : String(value)}
@@ -176,11 +176,11 @@ export default async function FormDetailPage({
 
           {/* Raw Data Card (Collapsible) */}
           <details className="bg-white rounded-lg shadow">
-            <summary className="px-6 py-4 cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
+            <summary className="px-6 py-4 cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900 bg-white">
               View Raw Data
             </summary>
-            <div className="px-6 pb-4">
-              <pre className="text-xs bg-gray-50 p-4 rounded overflow-x-auto">
+            <div className="px-6 pb-4 bg-white">
+              <pre className="text-xs text-gray-900 bg-gray-50 p-4 rounded overflow-x-auto">
                 {JSON.stringify(submission.raw_request, null, 2)}
               </pre>
             </div>

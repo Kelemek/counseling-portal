@@ -39,15 +39,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify the counselor exists and has counselor role
+    // Verify the counselor exists and has a counselor profile
     const { data: counselor, error: counselorError } = await supabase
       .from('users')
-      .select('id, role')
+      .select('id, role, counselor_profiles!inner(id)')
       .eq('id', counselor_id)
-      .eq('role', 'counselor')
       .single();
 
     if (counselorError || !counselor) {
+      console.error('Counselor verification failed:', counselorError);
       return NextResponse.json(
         { error: 'Counselor not found' },
         { status: 404 }

@@ -78,11 +78,11 @@ export default function AssignmentForm({
           onChange={(e) =>
             setFormData({ ...formData, counselor_id: e.target.value })
           }
-          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
+          className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-900 bg-white border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
         >
-          <option value="">Choose a counselor...</option>
+          <option value="" className="text-gray-500">Choose a counselor...</option>
           {counselors.map((counselor) => (
-            <option key={counselor.id} value={counselor.id}>
+            <option key={counselor.id} value={counselor.id} className="text-gray-900">
               {counselor.email}
               {counselor.counselor_profiles?.specialization &&
                 ` - ${counselor.counselor_profiles.specialization}`}
@@ -105,7 +105,7 @@ export default function AssignmentForm({
           onChange={(e) =>
             setFormData({ ...formData, due_date: e.target.value })
           }
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="mt-1 block w-full text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
 
@@ -124,7 +124,7 @@ export default function AssignmentForm({
             setFormData({ ...formData, notes: e.target.value })
           }
           placeholder="Add any notes or instructions for the counselor..."
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="mt-1 block w-full text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:text-gray-400"
         />
       </div>
 

@@ -2,7 +2,6 @@
 // This allows us to switch auth providers in the future if needed
 
 import { createClient } from '@/lib/supabase/client'
-import { createClient as createServerClient } from '@/lib/supabase/server'
 import type { UserRole } from '@/lib/types/database.types'
 
 export interface AuthUser {
@@ -107,6 +106,7 @@ export const authClient = {
 // Server-side auth functions
 export const authServer = {
   async getCurrentUser(): Promise<AuthUser | null> {
+    const { createClient: createServerClient } = await import('@/lib/supabase/server')
     const supabase = await createServerClient()
     const { data: { user } } = await supabase.auth.getUser()
     

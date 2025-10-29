@@ -13,11 +13,10 @@ export default async function CounselorsPage() {
 
   const supabase = await createClient();
 
-  // Get all counselors with their profiles
+  // Get all users with counselor profiles (includes admins who are also counselors)
   const { data: counselors, error } = await supabase
     .from('users')
-    .select('id, email, created_at, counselor_profiles(*)')
-    .eq('role', 'counselor')
+    .select('id, email, role, created_at, counselor_profiles!inner(*)')
     .order('created_at', { ascending: false });
 
   if (error) {

@@ -24,11 +24,10 @@ export default async function AdminFormsPage() {
     console.error('Error fetching submissions:', error);
   }
 
-  // Get all counselors for assignment options
+  // Get all users with counselor profiles (includes admins who are also counselors)
   const { data: counselors } = await supabase
     .from('users')
-    .select('id, email, counselor_profiles(*)')
-    .eq('role', 'counselor')
+    .select('id, email, role, counselor_profiles!inner(*)')
     .order('email');
 
   // Get existing assignments

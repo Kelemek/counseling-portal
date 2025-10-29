@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "Church counseling ministry portal",
   "private": true,
+  "workspaces": [
+    "app"
+  ],
   "scripts": {
-    "dev": "cd app && npm run dev",
-    "build": "cd app && npm run build",
-    "start": "cd app && npm start",
-    "lint": "cd app && npm run lint"
+    "dev": "npm run dev --workspace=app",
+    "build": "npm run build --workspace=app",
+    "start": "npm run start --workspace=app",
+    "lint": "npm run lint --workspace=app"
   },
   "keywords": [],
   "author": "",

@@ -61,7 +61,24 @@ export default async function AssignFormPage({
   // Parse form fields for display
   let parsedFields: Record<string, any> = {};
   try {
-    parsedFields = JSON.parse(submission.parsed_fields);
+    // Try parsed_fields first, fall back to raw_request
+    if (submission.parsed_fields) {
+      parsedFields = JSON.parse(submission.parsed_fields);
+    } else if (submission.raw_request) {
+      // Extract fields from raw_request
+      const rawData = typeof submission.raw_request === 'string' 
+        ? JSON.parse(submission.raw_request) 
+        : submission.raw_request;
+      
+      // JotForm sends data with question IDs as keys (q1, q2, etc.)
+      // We'll extract those into a cleaner format
+      parsedFields = Object.entries(rawData)
+        .filter(([key]) => key.startsWith('q'))
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {} as Record<string, any>);
+    }
   } catch (e) {
     console.error('Error parsing fields:', e);
   }

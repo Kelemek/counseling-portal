@@ -43,10 +43,27 @@ export default async function CounselorFormDetailPage({
   // Parse the form fields
   let parsedFields: Record<string, any> = {};
   try {
-    if (submission.form_fields) {
+    // Try parsed_fields first, fall back to raw_request
+    if (submission.parsed_fields) {
+      parsedFields = JSON.parse(submission.parsed_fields);
+    } else if (submission.form_fields) {
       parsedFields = typeof submission.form_fields === 'string'
         ? JSON.parse(submission.form_fields)
         : submission.form_fields;
+    } else if (submission.raw_request) {
+      // Extract fields from raw_request
+      const rawData = typeof submission.raw_request === 'string' 
+        ? JSON.parse(submission.raw_request) 
+        : submission.raw_request;
+      
+      // JotForm sends data with question IDs as keys (q1, q2, etc.)
+      // We'll extract those into a cleaner format
+      parsedFields = Object.entries(rawData)
+        .filter(([key]) => key.startsWith('q'))
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {} as Record<string, any>);
     }
   } catch (e) {
     console.error('Failed to parse form fields:', e);

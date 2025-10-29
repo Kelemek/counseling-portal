@@ -83,19 +83,10 @@ export default function AssignmentForm({
         >
           <option value="" className="text-gray-500">Choose a counselor...</option>
           {counselors.map((counselor) => {
-            // counselor_profiles can be either an object or an array depending on the query
-            let profile = counselor.counselor_profiles;
-            if (Array.isArray(profile)) {
-              profile = profile[0];
-            }
-            
-            const specialtiesText = profile?.specialties && Array.isArray(profile.specialties) && profile.specialties.length > 0
-              ? ` - ${profile.specialties.join(', ')}`
-              : '';
-            
+            console.log('Rendering counselor option:', counselor);
             return (
               <option key={counselor.id} value={counselor.id} className="text-gray-900">
-                {counselor.email}{specialtiesText}
+                {counselor.email}
               </option>
             );
           })}

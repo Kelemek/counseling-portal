@@ -25,6 +25,7 @@ export default function AssignmentForm({
     due_date: '',
   });
 
+  console.log('AssignmentForm received counselors:', counselors);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);

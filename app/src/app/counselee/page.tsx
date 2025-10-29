@@ -1,4 +1,5 @@
-import { authServer } from '@/lib/auth/server'
+import { authServer } from '@/lib/auth/server';
+import { hasRole } from '@/lib/auth/roles'
 import { redirect } from 'next/navigation'
 
 export default async function CounseeleeDashboard() {
@@ -8,7 +9,7 @@ export default async function CounseeleeDashboard() {
     redirect('/login')
   }
 
-  if (user.role !== 'counselee') {
+  if (!hasRole(user, 'counselee')) {
     redirect('/unauthorized')
   }
 

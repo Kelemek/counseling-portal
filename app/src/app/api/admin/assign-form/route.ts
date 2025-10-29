@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { authServer } from '@/lib/auth/server';
+import { hasRole } from '@/lib/auth/roles';
 
 export async function POST(request: NextRequest) {
   try {
     // Verify admin user
     const user = await authServer.getCurrentUser();
-    if (!user || user.role !== 'admin') {
+    if (!user || !hasRole(user, 'admin')) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }

@@ -1,4 +1,5 @@
 import { authServer } from '@/lib/auth/server'
+import { hasRole } from '@/lib/auth/roles'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
@@ -9,7 +10,7 @@ export default async function AdminDashboard() {
     redirect('/login')
   }
 
-  if (user.role !== 'admin') {
+  if (!hasRole(user, 'admin')) {
     redirect('/unauthorized')
   }
 

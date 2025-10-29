@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { authServer } from '@/lib/auth/server';
+import { hasRole } from '@/lib/auth/roles';
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { FileText, UserPlus, ArrowLeft } from 'lucide-react';
@@ -8,7 +9,7 @@ import { formatDistanceToNow } from 'date-fns';
 export default async function AdminFormsPage() {
   const user = await authServer.getCurrentUser();
   
-  if (!user || user.role !== 'admin') {
+  if (!user || !hasRole(user, 'admin')) {
     redirect('/unauthorized');
   }
 
@@ -110,13 +111,18 @@ export default async function AdminFormsPage() {
                   // Parse the form data to get a name or identifier
                   let submitterName = 'Unknown';
                   try {
-                    const parsed = JSON.parse(submission.parsed_fields);
-                    // Look for common name fields
-                    const nameField = Object.entries(parsed).find(([key]) => 
-                      key.toLowerCase().includes('name')
-                    );
-                    if (nameField) {
-                      submitterName = String(nameField[1]);
+                    // JotForm's 'pretty' field contains formatted data
+                    if (submission.data && typeof submission.data === 'object') {
+                      const data = submission.data as any;
+                      
+                      if (data.pretty) {
+                        // Pretty field is like "Name:John Doe, Email:john@example.com, ..."
+                        const prettyText = String(data.pretty);
+                        const nameMatch = prettyText.match(/Name:\s*([^,]+)/i);
+                        if (nameMatch) {
+                          submitterName = nameMatch[1].trim();
+                        }
+                      }
                     }
                   } catch (e) {
                     // Ignore parse errors

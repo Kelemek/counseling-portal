@@ -1,4 +1,5 @@
-import { authServer } from '@/lib/auth/server'
+import { authServer } from '@/lib/auth/server';
+import { hasRole } from '@/lib/auth/roles'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
@@ -10,7 +11,7 @@ export default async function CounselorFormsPage() {
     redirect('/login')
   }
 
-  if (user.role !== 'counselor' && user.role !== 'admin') {
+  if (!hasRole(user, 'counselor') && !hasRole(user, 'admin')) {
     redirect('/unauthorized')
   }
 
@@ -108,10 +109,28 @@ export default async function CounselorFormsPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white">
-                        {assignments.map((assignment: any) => (
+                        {assignments.map((assignment: any) => {
+                          // Extract counselee name from the pretty field
+                          let counseleeName = 'Unknown';
+                          try {
+                            if (assignment.intake_form?.data && typeof assignment.intake_form.data === 'object') {
+                              const data = assignment.intake_form.data as any;
+                              if (data.pretty) {
+                                const prettyText = String(data.pretty);
+                                const nameMatch = prettyText.match(/Name:\s*([^,]+)/i);
+                                if (nameMatch) {
+                                  counseleeName = nameMatch[1].trim();
+                                }
+                              }
+                            }
+                          } catch (e) {
+                            // Ignore errors
+                          }
+                          
+                          return (
                           <tr key={assignment.id}>
                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                              {assignment.intake_form?.counselee_name || 'Unknown'}
+                              {counseleeName}
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                               <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
@@ -141,7 +160,8 @@ export default async function CounselorFormsPage() {
                               </Link>
                             </td>
                           </tr>
-                        ))}
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

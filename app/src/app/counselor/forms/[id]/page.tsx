@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { authServer } from '@/lib/auth/server';
+import { hasAnyRole } from '@/lib/auth/roles';
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { ArrowLeft, FileText, Calendar, User, Clock } from 'lucide-react';
@@ -12,7 +13,8 @@ export default async function CounselorFormDetailPage({
 }) {
   const user = await authServer.getCurrentUser();
   
-  if (!user || user.role !== 'counselor') {
+  // Much cleaner! Just check if user has counselor OR admin role
+  if (!user || !hasAnyRole(user, ['counselor', 'admin'])) {
     redirect('/unauthorized');
   }
 
@@ -40,22 +42,27 @@ export default async function CounselorFormDetailPage({
     .eq('intake_form_id', id)
     .single();
 
-  // Parse the form fields
-  let parsedFields: Record<string, any> = {};
+  // Parse the form fields from the pretty field
+  let parsedFields: Array<{ label: string; value: string }> = [];
   try {
-    // Use the correct field names from schema: 'parsed' and 'data'
-    if (submission.parsed && typeof submission.parsed === 'object') {
-      parsedFields = submission.parsed;
-    } else if (submission.data && typeof submission.data === 'object') {
-      const rawData = submission.data;
+    if (submission.data?.pretty) {
+      const prettyText = submission.data.pretty as string;
       
-      // JotForm sends data with question IDs as keys (q1, q2, etc.)
-      parsedFields = Object.entries(rawData)
-        .filter(([key]) => key.startsWith('q'))
-        .reduce((acc, [key, value]) => {
-          acc[key] = value;
-          return acc;
-        }, {} as Record<string, any>);
+      // Split by looking for patterns like ", Word:" which indicate new fields
+      // This preserves commas within values
+      const parts = prettyText.split(/,\s*(?=[A-Z])/);
+      
+      parsedFields = parts
+        .map(part => {
+          const colonIndex = part.indexOf(':');
+          if (colonIndex === -1) return null;
+          
+          const label = part.substring(0, colonIndex).trim();
+          const value = part.substring(colonIndex + 1).trim();
+          
+          return { label, value };
+        })
+        .filter((field): field is { label: string; value: string } => field !== null);
     }
   } catch (e) {
     console.error('Failed to parse form fields:', e);
@@ -110,20 +117,15 @@ export default async function CounselorFormDetailPage({
                 </h2>
               </div>
               <div className="px-6 py-4">
-                {Object.keys(parsedFields).length > 0 ? (
+                {parsedFields.length > 0 ? (
                   <dl className="space-y-6">
-                    {Object.entries(parsedFields).map(([key, value]) => (
-                      <div key={key} className="border-b border-gray-200 pb-4 last:border-0">
+                    {parsedFields.map((field, index) => (
+                      <div key={index} className="border-b border-gray-200 pb-4 last:border-0">
                         <dt className="text-sm font-medium text-gray-700 mb-2">
-                          {key}
+                          {field.label}
                         </dt>
-                        <dd className="text-sm text-gray-900">
-                          {typeof value === 'object'
-                            ? <pre className="bg-gray-50 p-3 rounded text-xs overflow-x-auto">
-                                {JSON.stringify(value, null, 2)}
-                              </pre>
-                            : <p className="whitespace-pre-wrap">{String(value)}</p>
-                          }
+                        <dd className="text-sm text-gray-900 whitespace-pre-wrap">
+                          {field.value}
                         </dd>
                       </div>
                     ))}

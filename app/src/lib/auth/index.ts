@@ -62,7 +62,7 @@ export const authClient = {
       id: user.id,
       email: user.email!,
       fullName: profile.full_name || undefined,
-      role: profile.role,
+      roles: profile.role ? [profile.role as UserRole] : [],
       isActive: profile.is_active,
       metadata: profile.metadata || {},
     }

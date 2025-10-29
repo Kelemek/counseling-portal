@@ -21,12 +21,12 @@ export default function LoginPage() {
       await authClient.signIn({ email, password })
       const user = await authClient.getCurrentUser()
       
-      // Redirect based on role
-      if (user?.role === 'admin') {
+      // Redirect based on role - check first role
+      if (user?.roles.includes('admin')) {
         router.push('/admin')
-      } else if (user?.role === 'counselor') {
+      } else if (user?.roles.includes('counselor')) {
         router.push('/counselor')
-      } else if (user?.role === 'counselee') {
+      } else if (user?.roles.includes('counselee')) {
         router.push('/counselee')
       } else {
         router.push('/')

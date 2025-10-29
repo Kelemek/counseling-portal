@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { authServer } from '@/lib/auth/server';
+import { hasRole } from '@/lib/auth/roles';
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { ArrowLeft, UserPlus, Mail, Award } from 'lucide-react';
@@ -7,7 +8,7 @@ import { ArrowLeft, UserPlus, Mail, Award } from 'lucide-react';
 export default async function CounselorsPage() {
   const user = await authServer.getCurrentUser();
   
-  if (!user || user.role !== 'admin') {
+  if (!user || !hasRole(user, 'admin')) {
     redirect('/unauthorized');
   }
 

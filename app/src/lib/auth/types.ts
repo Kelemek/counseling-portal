@@ -8,7 +8,7 @@ export interface AuthUser {
   id: string
   email: string
   fullName?: string
-  role: UserRole
+  roles: UserRole[]  // Changed from single role to array of roles
   isActive: boolean
   metadata?: Record<string, any>
 }

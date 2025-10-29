@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { authServer } from '@/lib/auth/server';
+import { hasRole } from '@/lib/auth/roles';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import CreateCounselorForm from './CreateCounselorForm';
@@ -7,7 +8,7 @@ import CreateCounselorForm from './CreateCounselorForm';
 export default async function NewCounselorPage() {
   const user = await authServer.getCurrentUser();
   
-  if (!user || user.role !== 'admin') {
+  if (!user || !hasRole(user, 'admin')) {
     redirect('/unauthorized');
   }
 

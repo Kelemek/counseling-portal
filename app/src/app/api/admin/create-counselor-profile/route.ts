@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { authServer } from '@/lib/auth/server';
+import { hasRole } from '@/lib/auth/roles';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST() {
@@ -10,7 +11,7 @@ export async function POST() {
       return NextResponse.json({ error: 'Not logged in' }, { status: 401 });
     }
 
-    if (user.role !== 'admin') {
+    if (!hasRole(user, 'admin')) {
       return NextResponse.json({ error: 'Only admins can create counselor profiles for themselves' }, { status: 403 });
     }
 

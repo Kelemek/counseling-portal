@@ -1,4 +1,5 @@
-import { authServer } from '@/lib/auth/server'
+import { authServer } from '@/lib/auth/server';
+import { hasRole } from '@/lib/auth/roles'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
@@ -10,7 +11,7 @@ export default async function CounselorDashboard() {
     redirect('/login')
   }
 
-  if (user.role !== 'counselor' && user.role !== 'admin') {
+  if (!hasRole(user, 'counselor') && !hasRole(user, 'admin')) {
     redirect('/unauthorized')
   }
 

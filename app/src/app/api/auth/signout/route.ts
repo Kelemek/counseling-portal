@@ -7,5 +7,8 @@ export async function POST(request: NextRequest) {
   
   // Get the origin from the request to ensure proper HTTPS redirect
   const origin = request.nextUrl.origin
-  return NextResponse.redirect(new URL('/login', origin))
+  const loginUrl = new URL('/login', origin)
+  
+  // Use 303 See Other to force a GET redirect after POST
+  return NextResponse.redirect(loginUrl, { status: 303 })
 }

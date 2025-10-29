@@ -1,64 +1,125 @@
-import Link from 'next/link'import Image from "next/image";
+import Link from 'next/link'import Link from 'next/link'import Image from "next/image";
 
 
 
-export default function HomePage() {export default function Home() {
+export default function HomePage() {
 
-  return (  return (
+  return (
 
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">export default function HomePage() {export default function Home() {
 
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
 
-        <div className="text-center mb-8">        <Image
+        <div className="text-center mb-8">  return (  return (
+
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+
+            Counseling Portal    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+
+          </h1>
+
+          <p className="text-gray-600">      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+
+            Church Counseling Ministry Portal
+
+          </p>        <div className="text-center mb-8">        <Image
+
+        </div>
 
           <h1 className="text-3xl font-bold text-gray-900 mb-2">          className="dark:invert"
 
-            Counseling Portal          src="/next.svg"
+        <div className="space-y-4">
 
-          </h1>          alt="Next.js logo"
+          <Link            Counseling Portal          src="/next.svg"
 
-          <p className="text-gray-600">          width={100}
+            href="/login"
+
+            className="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-md text-center transition"          </h1>          alt="Next.js logo"
+
+          >
+
+            Sign In          <p className="text-gray-600">          width={100}
+
+          </Link>
 
             Church Counseling Ministry Portal          height={20}
 
-          </p>          priority
+          <div className="relative">
 
-        </div>        />
+            <div className="absolute inset-0 flex items-center">          </p>          priority
 
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
+              <div className="w-full border-t border-gray-300" />
 
-        <div className="space-y-4">          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+            </div>        </div>        />
 
-          <Link            To get started, edit the page.tsx file.
+            <div className="relative flex justify-center text-sm">
 
-            href="/login"          </h1>
+              <span className="px-2 bg-white text-gray-500">Quick Access</span>        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
 
-            className="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-md text-center transition"          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+            </div>
 
-          >            Looking for a starting point or more instructions? Head over to{" "}
+          </div>        <div className="space-y-4">          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
 
-            Sign In            <a
 
-          </Link>              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
 
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+          <div className="grid grid-cols-3 gap-2 text-sm">          <Link            To get started, edit the page.tsx file.
 
-          <div className="relative">            >
+            <Link
 
-            <div className="absolute inset-0 flex items-center">              Templates
+              href="/admin"            href="/login"          </h1>
 
-              <div className="w-full border-t border-gray-300" />            </a>{" "}
+              className="text-center py-2 px-3 border border-gray-300 rounded-md hover:bg-gray-50 transition"
 
-            </div>            or the{" "}
+            >            className="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-md text-center transition"          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
 
-            <div className="relative flex justify-center text-sm">            <a
+              Admin
 
-              <span className="px-2 bg-white text-gray-500">Quick Access</span>              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            </Link>          >            Looking for a starting point or more instructions? Head over to{" "}
 
-            </div>              className="font-medium text-zinc-950 dark:text-zinc-50"
+            <Link
 
-          </div>            >
+              href="/counselor"            Sign In            <a
+
+              className="text-center py-2 px-3 border border-gray-300 rounded-md hover:bg-gray-50 transition"
+
+            >          </Link>              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+
+              Counselor
+
+            </Link>              className="font-medium text-zinc-950 dark:text-zinc-50"
+
+            <Link
+
+              href="/counselee"          <div className="relative">            >
+
+              className="text-center py-2 px-3 border border-gray-300 rounded-md hover:bg-gray-50 transition"
+
+            >            <div className="absolute inset-0 flex items-center">              Templates
+
+              Counselee
+
+            </Link>              <div className="w-full border-t border-gray-300" />            </a>{" "}
+
+          </div>
+
+        </div>            </div>            or the{" "}
+
+
+
+        <div className="mt-8 text-center text-sm text-gray-500">            <div className="relative flex justify-center text-sm">            <a
+
+          <p>Need help? Contact your church administrator</p>
+
+        </div>              <span className="px-2 bg-white text-gray-500">Quick Access</span>              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+
+      </div>
+
+    </div>            </div>              className="font-medium text-zinc-950 dark:text-zinc-50"
+
+  )
+
+}          </div>            >
+
 
               Learning
 

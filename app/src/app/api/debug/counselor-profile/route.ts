@@ -29,7 +29,7 @@ export async function GET() {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
+        roles: user.roles,
       },
       counselorProfile: counselorProfile || null,
       profileError: profileError?.message || null,

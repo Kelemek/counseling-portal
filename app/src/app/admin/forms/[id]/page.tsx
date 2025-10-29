@@ -41,23 +41,28 @@ export default async function FormDetailPage({
   let formattedFields: Array<{ label: string; value: any }> = [];
   
   try {
-    console.log('Submission data:', {
-      id: submission.id,
-      has_parsed: !!submission.parsed,
-      has_data: !!submission.data,
-      data_type: typeof submission.data,
-      data_preview: submission.data ? JSON.stringify(submission.data).substring(0, 200) : 'null'
-    });
-    
     // Use the correct field names from schema: 'parsed' and 'data'
     if (submission.data && typeof submission.data === 'object') {
-      const rawData = submission.data;
+      const rawData = submission.data as any;
       
-      console.log('Raw data keys:', Object.keys(rawData).slice(0, 20));
+      // JotForm webhook wraps the actual form data in a 'rawRequest' field
+      let formData = rawData;
+      if (rawData.rawRequest) {
+        try {
+          formData = typeof rawData.rawRequest === 'string' 
+            ? JSON.parse(rawData.rawRequest) 
+            : rawData.rawRequest;
+        } catch (e) {
+          console.error('Failed to parse rawRequest:', e);
+          formData = rawData.rawRequest;
+        }
+      }
+      
+      console.log('Form data keys:', Object.keys(formData).slice(0, 20));
       
       // JotForm sends data with question IDs as keys (q1_typeField, q2_name, etc.)
       // Each value can be a simple string/number or an object with more details
-      formattedFields = Object.entries(rawData)
+      formattedFields = Object.entries(formData)
         .filter(([key]) => key.startsWith('q'))
         .map(([key, value]) => {
           // Extract a readable label from the key or value

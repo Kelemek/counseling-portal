@@ -37,8 +37,9 @@ export default async function FormDetailPage({
     .eq('intake_form_id', id)
     .single();
 
-  // Parse the form fields
-  let parsedFields: Record<string, any> = {};
+  // Parse the form fields  
+  let formattedFields: Array<{ label: string; value: any }> = [];
+  
   try {
     console.log('Submission data:', {
       id: submission.id,
@@ -49,23 +50,64 @@ export default async function FormDetailPage({
     });
     
     // Use the correct field names from schema: 'parsed' and 'data'
-    if (submission.parsed && typeof submission.parsed === 'object') {
-      parsedFields = submission.parsed;
-    } else if (submission.data && typeof submission.data === 'object') {
+    if (submission.data && typeof submission.data === 'object') {
       const rawData = submission.data;
       
-      console.log('Raw data keys:', Object.keys(rawData));
+      console.log('Raw data keys:', Object.keys(rawData).slice(0, 20));
       
-      // JotForm sends data with question IDs as keys (q1, q2, etc.)
-      // We'll extract those into a cleaner format
-      parsedFields = Object.entries(rawData)
+      // JotForm sends data with question IDs as keys (q1_typeField, q2_name, etc.)
+      // Each value can be a simple string/number or an object with more details
+      formattedFields = Object.entries(rawData)
         .filter(([key]) => key.startsWith('q'))
-        .reduce((acc, [key, value]) => {
-          acc[key] = value;
-          return acc;
-        }, {} as Record<string, any>);
+        .map(([key, value]) => {
+          // Extract a readable label from the key or value
+          let label = key.replace(/^q\d+_/, '').replace(/_/g, ' ');
+          let displayValue: any = value;
+          
+          // If value is an object, it might have prettyFormat, text, or cfname properties
+          if (typeof value === 'object' && value !== null) {
+            const obj = value as any;
+            
+            // Try to get the question label
+            if (obj.text) {
+              label = String(obj.text);
+            } else if (obj.cfname) {
+              label = String(obj.cfname).replace(/_/g, ' ');
+            } else if (obj.name) {
+              label = String(obj.name).replace(/_/g, ' ');
+            }
+            
+            // Try to get the answer value
+            if (obj.prettyFormat) {
+              displayValue = obj.prettyFormat;
+            } else if (obj.answer) {
+              displayValue = obj.answer;
+            } else if (obj.value) {
+              displayValue = obj.value;
+            } else {
+              // If it has first/last name structure
+              if (obj.first || obj.last) {
+                displayValue = [obj.first, obj.last].filter(Boolean).join(' ');
+              }
+              // If it has address components
+              else if (obj.addr_line1 || obj.city || obj.state) {
+                displayValue = [obj.addr_line1, obj.addr_line2, obj.city, obj.state, obj.postal].filter(Boolean).join(', ');
+              }
+              // Otherwise keep as is
+            }
+          }
+          
+          // Capitalize the label
+          label = label
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+          
+          return { label, value: displayValue };
+        })
+        .filter(field => field.value !== null && field.value !== undefined && field.value !== '');
         
-      console.log('Parsed fields count:', Object.keys(parsedFields).length);
+      console.log('Formatted fields count:', formattedFields.length);
     }
   } catch (e) {
     console.error('Error parsing fields:', e);
@@ -181,18 +223,18 @@ export default async function FormDetailPage({
               Form Responses
             </h2>
             <div className="space-y-4">
-              {Object.entries(parsedFields).length === 0 ? (
+              {formattedFields.length === 0 ? (
                 <p className="text-sm text-gray-500">No form data available</p>
               ) : (
-                Object.entries(parsedFields).map(([key, value]) => (
-                  <div key={key} className="border-b border-gray-200 pb-3 last:border-b-0">
-                    <dt className="text-sm font-semibold text-gray-700 mb-1">
-                      {key}
+                formattedFields.map((field, index) => (
+                  <div key={index} className="border-b border-gray-200 pb-3 last:border-b-0">
+                    <dt className="text-sm font-semibold text-gray-700 mb-1 capitalize">
+                      {field.label}
                     </dt>
                     <dd className="text-sm text-gray-900 bg-white">
-                      {typeof value === 'object'
-                        ? JSON.stringify(value, null, 2)
-                        : String(value)}
+                      {typeof field.value === 'object' && field.value !== null
+                        ? JSON.stringify(field.value, null, 2)
+                        : String(field.value || '-')}
                     </dd>
                   </div>
                 ))

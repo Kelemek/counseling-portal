@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import AssignmentForm from './AssignmentForm';
+import NoCounselorsMessage from './NoCounselorsMessage';
 
 export default async function AssignFormPage({
   params,
@@ -116,17 +117,7 @@ export default async function AssignFormPage({
               Assignment Details
             </h2>
             {!counselors || counselors.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-600 mb-4">
-                  No counselors available. You need to create counselor accounts first.
-                </p>
-                <Link
-                  href="/admin/counselors/new"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-                >
-                  Create Counselor Account
-                </Link>
-              </div>
+              <NoCounselorsMessage />
             ) : (
               <AssignmentForm
                 formId={id}

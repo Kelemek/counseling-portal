@@ -19,7 +19,7 @@ export function useAuth() {
 
     // Listen for auth changes
     const supabase = createClient()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session?.user) {
           const user = await authClient.getCurrentUser()
@@ -32,15 +32,20 @@ export function useAuth() {
     )
 
     return () => {
-      subscription.unsubscribe()
+      // unsubscribe defensively
+      try {
+        data?.subscription?.unsubscribe()
+      } catch (e) {
+        // ignore unsubscribe errors
+      }
     }
   }, [])
 
-  const signIn = async (email: string, password: string) => {
-    await authClient.signIn({ email, password })
-    const user = await authClient.getCurrentUser()
-    setUser(user)
-    return user
+  const signIn = async (email: string) => {
+    // Magic-link flow: send sign-in email
+    await authClient.signInWithMagicLink(email)
+    // Do not set user here — user will be set when they complete the magic link flow
+    return null
   }
 
   const signOut = async () => {
@@ -55,8 +60,8 @@ export function useAuth() {
     signIn,
     signOut,
     isAuthenticated: !!user,
-    isAdmin: user?.roles.includes('admin') ?? false,
-    isCounselor: (user?.roles.includes('counselor') || user?.roles.includes('admin')) ?? false,
-    isCounselee: user?.roles.includes('counselee') ?? false,
+    isAdmin: (user?.roles ?? []).includes('admin'),
+    isCounselor: ((user?.roles ?? []).includes('counselor') || (user?.roles ?? []).includes('admin')),
+    isCounselee: (user?.roles ?? []).includes('counselee'),
   }
 }

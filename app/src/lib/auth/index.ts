@@ -9,15 +9,17 @@ export type { AuthUser, SignInCredentials, SignUpData, UserRole }
 
 // Client-side auth functions
 export const authClient = {
-  async signIn({ email, password }: SignInCredentials) {
+  // Magic Link sign-in (passwordless)
+  async signInWithMagicLink(email: string, redirectTo?: string) {
     const supabase = createClient()
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithOtp({
       email,
-      password,
+      options: {
+        emailRedirectTo: redirectTo || `${window.location.origin}/auth/callback`,
+      },
     })
     
     if (error) throw error
-    return data
   },
 
   async signUp({ email, password, fullName, role = 'counselee' }: SignUpData) {

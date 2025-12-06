@@ -54,6 +54,12 @@ export default async function CounselorDashboard() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
+              <Link 
+                href="/select-portal"
+                className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+              >
+                Switch Portal
+              </Link>
               <span className="text-sm text-gray-700">{user.email}</span>
               <form action="/api/auth/signout" method="POST">
                 <button type="submit" className="text-sm text-gray-600 hover:text-gray-900">
